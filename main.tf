@@ -36,8 +36,6 @@ module "network" {
 # S3 for static files
 resource "aws_s3_bucket" "static" {
   bucket = var.s3_bucket_name
-  acl    = "private"
-
   tags = {
     Name = "${local.name_prefix}-s3-staging"
   }
@@ -46,7 +44,6 @@ resource "aws_s3_bucket" "static" {
 # Security group for ALB
 resource "aws_security_group" "alb_sg" {
   name   = "${local.name_prefix}-alb-sg-staging"
-  vpc_id = module.network.vpc_id
 
   ingress {
     description = "HTTP"
@@ -69,7 +66,7 @@ resource "aws_security_group" "alb_sg" {
 # Security group for EC2 instances (allow from ALB)
 resource "aws_security_group" "ec2_sg" {
   name   = "${local.name_prefix}-ec2-sg-staging"
-  vpc_id = module.network.vpc_id
+  # vpc_id = module.network.vpc_id
 
   ingress {
     description = "Allow from ALB"
@@ -104,7 +101,7 @@ resource "aws_lb_target_group" "app_tg" {
   name     = "${local.name_prefix}-tg-staging"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = module.network.vpc_id
+  # vpc_id   = module.network.vpc_id
 
   health_check {
     matcher  = "200"
